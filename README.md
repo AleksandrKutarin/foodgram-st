@@ -114,6 +114,6 @@ docker-compose down
 
 ```
 
-## Авторы
+## Автор
 
 *   [AleksandrKutarin]
