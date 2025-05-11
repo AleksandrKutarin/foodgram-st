@@ -8,8 +8,9 @@ from .models import (
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    list_display = ("id", "username", "email", "first_name",
-    "last_name", "is_staff")
+    list_display = (
+        "id", "username", "email", "first_name", "last_name", "is_staff"
+    )
     search_fields = ("email", "username")
     list_filter = ("is_staff", "is_superuser", "is_active")
     empty_value_display = "-пусто-"

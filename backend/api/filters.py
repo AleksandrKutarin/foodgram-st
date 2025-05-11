@@ -16,13 +16,13 @@ class IngredientSearchFilter(filters.SearchFilter):
 
     search_param = "name"
 
+
 class IngredientNameFilter(django_filters.FilterSet):
-    name = django_filters.CharFilter(field_name="name",
-    lookup_expr="startswith")
+    name = django_filters.CharFilter(lookup_expr='istartswith')
 
     class Meta:
         model = Ingredient
-        fields = ["name"]
+        fields = ['name']
 
 
 class RecipeFilter(django_filters.FilterSet):
@@ -36,7 +36,7 @@ class RecipeFilter(django_filters.FilterSet):
 
     is_favorited = django_filters.CharFilter(
         method="filter_is_favorited_custom"
-        )
+    )
     is_in_shopping_cart = django_filters.CharFilter(
         method="filter_is_in_shopping_cart_custom"
     )

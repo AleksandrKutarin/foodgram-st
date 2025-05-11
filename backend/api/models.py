@@ -55,10 +55,14 @@ class User(AbstractUser):
 
 
 class Ingredient(models.Model):
-    name = models.CharField(verbose_name="Название ингредиента",
-    max_length=128)
-    measurement_unit = models.CharField(verbose_name="Единица измерения",
-    max_length=64)
+    name = models.CharField(
+        verbose_name="Название ингредиента",
+        max_length=128
+    )
+    measurement_unit = models.CharField(
+        verbose_name="Единица измерения",
+        max_length=64
+    )
 
     class Meta:
         verbose_name = "Ингредиент"
@@ -76,8 +80,11 @@ class Ingredient(models.Model):
 
 
 class Tag(models.Model):
-    name = models.CharField(verbose_name="Название тега",
-    max_length=50, unique=True)
+    name = models.CharField(
+        verbose_name="Название тега",
+        max_length=50,
+        unique=True
+    )
     color = models.CharField(
         verbose_name="Цвет в HEX",
         max_length=7,
@@ -114,14 +121,18 @@ class Recipe(models.Model):
         related_name="recipes",
         verbose_name="Ингредиенты",
     )
-    tags = models.ManyToManyField(Tag, related_name="recipes",
-    verbose_name="Теги")
+    tags = models.ManyToManyField(
+        Tag, related_name="recipes",
+        verbose_name="Теги"
+    )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name="Время приготовления (в минутах)",
         validators=[],
     )
-    pub_date = models.DateTimeField(verbose_name="Дата публикации",
-    auto_now_add=True)
+    pub_date = models.DateTimeField(
+        verbose_name="Дата публикации",
+        auto_now_add=True
+    )
     favorited_by = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name="favorite_recipes",
@@ -190,16 +201,20 @@ class Follow(models.Model):
         related_name="following",
         verbose_name="Автор, на которого подписаны",
     )
-    created_at = models.DateTimeField(auto_now_add=True,
-    verbose_name="Дата подписки")
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата подписки"
+    )
 
     class Meta:
         verbose_name = "Подписка"
         verbose_name_plural = "Подписки"
         ordering = ["-created_at"]
         constraints = [
-            models.UniqueConstraint(fields=["user", "author"],
-            name="unique_follow"),
+            models.UniqueConstraint(
+                fields=["user", "author"],
+                name="unique_follow"
+            ),
             models.CheckConstraint(
                 check=~models.Q(user=models.F("author")),
                 name="prevent_self_follow"
