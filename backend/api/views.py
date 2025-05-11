@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from rest_framework import (
     viewsets,
     permissions,
@@ -8,7 +8,6 @@ from rest_framework import (
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.urls import path
 from .models import (
     Ingredient,
     Recipe,
@@ -23,19 +22,13 @@ from .serializers import (
     TagSerializer,
     RecipeMinifiedSerializer,
     UserWithRecipesSerializer,
-    CustomUserSerializer,
     UserAvatarSerializer,
 )
 from .filters import RecipeFilter, IngredientNameFilter
 from django.http import HttpResponse
 from django.db.models import Sum
-from rest_framework.pagination import (
-    PageNumberPagination,
-)
 from djoser.views import UserViewSet as DjoserUserViewSet
-from .pagination import (
-    CustomPageNumberPagination,
-)
+from .pagination import CustomPageNumberPagination
 from .permissions import IsAuthorOrReadOnly
 
 
@@ -131,8 +124,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         elif request.method == "DELETE":
             print(
-                f'''[DEBUG] Attempting to remove recipe {pk}
-                from shopping cart for user {user.id} ({user.username})'''
+                f"[DEBUG] Attempting to remove recipe {pk} \
+                from shopping cart for user {user.id} ({user.username})"
             )
             recipe_in_cart = recipe.in_shopping_cart_for_users.filter(
                 id=user.id
@@ -141,8 +134,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
             if not recipe_in_cart:
                 print(
-                    f'''[DEBUG] Condition (not recipe_in_cart) is True.
-                    Recipe not in cart or user mismatch.'''
+                    f"[DEBUG] Condition ({not recipe_in_cart}) is True. \
+                    Recipe not in cart or user mismatch."
                 )
                 return Response(
                     {"errors": "Рецепта нет в списке покупок"},
@@ -150,14 +143,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 )
 
             print(
-                f'''[DEBUG] Attempting recipe.
-                in_shopping_cart_for_users.remove(user)'''
+                f"[DEBUG] Attempting recipe. \
+                in_shopping_cart_for_users.remove({user})"
             )
             try:
                 recipe.in_shopping_cart_for_users.remove(user)
                 print(
-                    f'''[DEBUG] recipe.in_shopping_cart_for_users.
-                    remove(user) EXECUTED successfully.'''
+                    f"[DEBUG] recipe.in_shopping_cart_for_users. \
+                    remove({user}) EXECUTED successfully."
                 )
             except Exception as e:
                 print(f"[DEBUG] EXCEPTION during .remove(user): {str(e)}")
@@ -171,14 +164,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=False, methods=["get"], permission_classes=[
             permissions.IsAuthenticated
-            ]
+        ]
     )
     def download_shopping_cart(self, request):
         user = request.user
         shopping_list_items = (
             RecipeIngredient.objects.filter(
                 recipe__in_shopping_cart_for_users=user
-                )
+            )
             .values("ingredient__name", "ingredient__measurement_unit")
             .annotate(total_amount=Sum("amount"))
             .order_by("ingredient__name")
@@ -213,7 +206,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
         response[
             "Content-Disposition"
-            ] = 'attachment; filename="shopping_list.txt"'
+        ] = 'attachment; filename="shopping_list.txt"'
         return response
 
     @action(
@@ -230,8 +223,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         short_link_url = request.build_absolute_uri(
             f"/s/{recipe.id}/"
         )
-        return Response({"short-link": short_link_url},
-        status=status.HTTP_200_OK)
+        return Response(
+            {"short-link": short_link_url},
+            status=status.HTTP_200_OK
+        )
 
 
 class CustomUserViewSet(DjoserUserViewSet):
@@ -336,8 +331,9 @@ class CustomUserViewSet(DjoserUserViewSet):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST
-                )
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
         elif request.method == "DELETE":
             if user.avatar:
                 user.avatar.delete()

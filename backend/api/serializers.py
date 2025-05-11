@@ -19,6 +19,7 @@ from django.core.validators import (
     MinValueValidator,
 )
 
+
 class CustomUserCreateSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         validators=[
@@ -52,8 +53,11 @@ class CustomUserCreateSerializer(serializers.ModelSerializer):
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
-    avatar = serializers.ImageField(read_only=True,
-    required=False, allow_null=True)
+    avatar = serializers.ImageField(
+        read_only=True,
+        required=False,
+        allow_null=True
+    )
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
@@ -70,10 +74,14 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         request = self.context.get("request")
-        if request and request.user.is_authenticated and isinstance(obj,
-        User):
-            return Follow.objects.filter(user=request.user,
-            author=obj).exists()
+        if request and request.user.is_authenticated and isinstance(
+            obj,
+            User
+        ):
+            return Follow.objects.filter(
+                user=request.user,
+                author=obj
+            ).exists()
         return False
 
     def to_representation(self, instance):
@@ -101,7 +109,7 @@ class RecipeIngredientReadSerializer(serializers.ModelSerializer):
     name = serializers.ReadOnlyField(source="ingredient.name")
     measurement_unit = serializers.ReadOnlyField(
         source="ingredient.measurement_unit"
-        )
+    )
 
     class Meta:
         model = RecipeIngredient
@@ -416,7 +424,7 @@ class UserWithRecipesSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return Follow.objects.filter(
                 user=request.user, author=obj
-                ).exists()
+            ).exists()
         return False
 
     def get_recipes(self, obj):
@@ -435,11 +443,10 @@ class UserWithRecipesSerializer(serializers.ModelSerializer):
                 pass
         return RecipeMinifiedSerializer(
             queryset, many=True, context=self.context
-            ).data
+        ).data
 
     def get_recipes_count(self, obj):
         return obj.recipes.count()
-
 
 
 class UserAvatarSerializer(serializers.ModelSerializer):
