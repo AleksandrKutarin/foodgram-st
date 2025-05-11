@@ -1,0 +1,9 @@
+Django>=4.2
+djangorestframework>=3.14
+djoser>=2.2
+psycopg2-binary>=2.9
+gunicorn>=20.1
+python-dotenv>=1.0
+Pillow>=10.0
+django-filter>=23.2
+drf-extra-fields>=0.7.1

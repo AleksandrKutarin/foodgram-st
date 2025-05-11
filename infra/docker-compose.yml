@@ -1,11 +1,36 @@
 version: '3.3'
 services:
+  db:
+    image: postgres:13.0-alpine
+    volumes:
+      - foodgram_postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ../.env # Указываем путь к .env в корне проекта
+    container_name: foodgram-db
 
   frontend:
     container_name: foodgram-front
     build: ../frontend
     volumes:
       - ../frontend/:/app/result_build/
+    depends_on:
+      - db
+
+  backend:
+    container_name: foodgram-backend
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    env_file:
+      - ../.env
+    volumes:
+      - ../backend:/app
+      - ./foodgram_static/:/app/static/  # Для статики Django
+      - ./foodgram_media/:/app/media/    # Для медиа Django
+      - ../data:/app/data_for_management # <--- Добавлено для доступа к data/ingredients.json
+    depends_on:
+      - db
+
   nginx:
     container_name: foodgram-proxy
     image: nginx:1.25.4-alpine
@@ -15,3 +40,12 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/:/usr/share/nginx/html/api/docs/
+      - ./foodgram_static/:/var/html/static/ # Для статики Django (используем ту же папку хоста)
+      - ./foodgram_media/:/var/html/media/   # Для медиа Django (используем ту же папку хоста)
+    depends_on:
+      - backend
+
+volumes:
+  foodgram_postgres_data:
+  # static_value: # Больше не нужен, если используем прямой маппинг папки хоста
+  # media_value:  # Больше не нужен, если используем прямой маппинг папки хоста
